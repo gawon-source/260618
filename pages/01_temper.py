@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+pd.read_csv("ta_20260619190504.csv", encoding="utf-8")
+
 st.set_page_config(
     page_title="서울 기후 타임머신",
     page_icon="🌏",
