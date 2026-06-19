@@ -1,118 +1,166 @@
 import streamlit as st
 import random
+import time
 
-# 페이지 설정
+# -------------------------------
+# 기본 설정
+# -------------------------------
 st.set_page_config(
-    page_title="MBTI 진로 추천 🌈",
-    page_icon="🚀",
+    page_title="CareerGram 📸",
+    page_icon="📸",
     layout="wide"
 )
 
-# CSS 꾸미기
+# -------------------------------
+# CSS
+# -------------------------------
 st.markdown("""
 <style>
-.main {
-    background: linear-gradient(to bottom right, #f9f7ff, #e3f2fd);
+.stApp {
+    background: linear-gradient(135deg, #FEC8D8, #D5AAFF, #B5EAEA);
 }
-.big-title {
-    font-size: 48px;
+
+.main-title {
+    text-align: center;
+    font-size: 52px;
     font-weight: bold;
-    text-align: center;
-    color: #6a1b9a;
+    color: white;
 }
+
 .sub-title {
-    font-size: 24px;
     text-align: center;
-    color: #1565c0;
+    font-size: 20px;
+    color: white;
 }
-.result-box {
-    background-color: #ffffff;
+
+.card {
+    background: white;
     padding: 25px;
     border-radius: 20px;
-    box-shadow: 0px 4px 20px rgba(0,0,0,0.15);
+    box-shadow: 0px 6px 18px rgba(0,0,0,0.15);
+    margin-top: 15px;
+}
+
+.feed-card {
+    background: white;
+    padding: 30px;
+    border-radius: 25px;
+    box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
     margin-top: 20px;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# MBTI별 직업 데이터
+# -------------------------------
+# 데이터
+# -------------------------------
 career_data = {
-    "INTJ": ["🧠 데이터 과학자", "💻 AI 개발자", "📊 전략 컨설턴트"],
-    "INTP": ["🔬 연구원", "💡 발명가", "👨‍💻 프로그래머"],
-    "ENTJ": ["🏢 CEO", "📈 경영 컨설턴트", "⚖️ 변호사"],
-    "ENTP": ["🚀 창업가", "📢 마케터", "🎤 방송인"],
-
-    "INFJ": ["🩺 상담사", "✍️ 작가", "🎓 교육 전문가"],
-    "INFP": ["🎨 디자이너", "🎬 콘텐츠 크리에이터", "📚 작가"],
-    "ENFJ": ["👩‍🏫 교사", "🎤 강사", "🤝 HR 전문가"],
-    "ENFP": ["🎭 배우", "📢 광고기획자", "🌟 크리에이터"],
-
-    "ISTJ": ["🏦 회계사", "📋 공무원", "⚙️ 엔지니어"],
-    "ISFJ": ["💉 간호사", "🏥 의료 코디네이터", "📖 사서"],
-    "ESTJ": ["📊 관리자", "🏛️ 행정가", "🏗️ 프로젝트 매니저"],
-    "ESFJ": ["👩‍⚕️ 간호사", "🎓 교사", "🤗 사회복지사"],
-
-    "ISTP": ["🔧 기계 엔지니어", "🚗 자동차 전문가", "🛠️ 기술자"],
-    "ISFP": ["🎨 아티스트", "📷 사진작가", "🎼 음악가"],
-    "ESTP": ["💼 영업 전문가", "🏅 스포츠 코치", "🎤 이벤트 플래너"],
-    "ESFP": ["🎬 연예인", "🎵 가수", "🎉 행사 기획자"]
+    "INTJ": [("AI 개발자", "9000만원", "SSS"), ("전략 컨설턴트", "8500만원", "S"), ("데이터 과학자", "8800만원", "SS")],
+    "INTP": [("연구원", "7000만원", "S"), ("개발자", "8500만원", "SS"), ("발명가", "9000만원", "SSS")],
+    "ENTJ": [("CEO", "1.2억원", "SSS"), ("변호사", "9000만원", "S"), ("기획자", "7500만원", "S")],
+    "ENTP": [("창업가", "1억원", "SSS"), ("마케터", "6500만원", "S"), ("PD", "7000만원", "S")],
+    "INFJ": [("상담사", "5000만원", "A"), ("작가", "6000만원", "S"), ("교사", "5500만원", "A")],
+    "INFP": [("디자이너", "6500만원", "S"), ("작가", "6000만원", "S"), ("크리에이터", "8000만원", "SS")],
+    "ENFJ": [("교사", "5500만원", "A"), ("강사", "6500만원", "S"), ("HR 전문가", "7000만원", "S")],
+    "ENFP": [("크리에이터", "9000만원", "SS"), ("광고기획자", "7000만원", "S"), ("배우", "1억원", "SSS")],
+    "ISTJ": [("공무원", "6000만원", "A"), ("회계사", "8000만원", "SS"), ("엔지니어", "7500만원", "S")],
+    "ISFJ": [("간호사", "6000만원", "A"), ("사서", "4500만원", "A"), ("교사", "5500만원", "A")],
+    "ESTJ": [("관리자", "8000만원", "SS"), ("행정가", "7000만원", "S"), ("PM", "8500만원", "SS")],
+    "ESFJ": [("간호사", "6000만원", "A"), ("교사", "5500만원", "A"), ("사회복지사", "5000만원", "A")],
+    "ISTP": [("기계 엔지니어", "8000만원", "SS"), ("자동차 전문가", "7500만원", "S"), ("기술자", "6500만원", "S")],
+    "ISFP": [("아티스트", "7000만원", "S"), ("사진작가", "6500만원", "S"), ("음악가", "8000만원", "SS")],
+    "ESTP": [("영업 전문가", "8500만원", "SS"), ("코치", "7000만원", "S"), ("이벤트 플래너", "6500만원", "S")],
+    "ESFP": [("연예인", "1억원", "SSS"), ("가수", "9000만원", "SS"), ("MC", "7000만원", "S")]
 }
 
+comments = [
+    "이 직업 진짜 잘 어울려요 🔥",
+    "미래 유망 직업이에요 🚀",
+    "성격과 궁합 최고 💯",
+    "숨겨진 재능이 보이네요 👀"
+]
+
+dm_messages = [
+    "당신은 잠재력이 큰 사람입니다 🚀",
+    "꾸준히 성장하면 큰 성공을 만들 수 있어요 🌟",
+    "미래가 정말 기대되는 타입이에요 💫"
+]
+
+# -------------------------------
 # 헤더
-st.markdown('<div class="big-title">🌈 MBTI 진로 추천 웹앱 🚀</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-title">학생들의 미래 직업을 추천해드려요! 💼✨</div>', unsafe_allow_html=True)
+# -------------------------------
+st.markdown('<p class="main-title">📸 CareerGram</p>', unsafe_allow_html=True)
+st.markdown('<p class="sub-title">SNS처럼 즐기는 MBTI 진로 탐색 ✨</p>', unsafe_allow_html=True)
 
-st.write("")
-st.balloons()
+# -------------------------------
+# 입력
+# -------------------------------
+name = st.text_input("👤 이름 입력", placeholder="예: 김민준")
+mbti = st.selectbox("🧩 MBTI 선택", list(career_data.keys()))
 
-# 사이드바
-st.sidebar.header("📌 사용 방법")
-st.sidebar.write("""
-1️⃣ 자신의 MBTI를 선택하세요  
-2️⃣ 추천 버튼을 누르세요  
-3️⃣ 나에게 맞는 직업을 확인하세요 🚀  
-""")
-
-# MBTI 선택
-mbti_list = list(career_data.keys())
-
-selected_mbti = st.selectbox(
-    "🧩 당신의 MBTI를 선택하세요!",
-    mbti_list
-)
-
-# 버튼
-if st.button("✨ 직업 추천 받기 ✨"):
-    jobs = career_data[selected_mbti]
-    recommended = random.sample(jobs, min(3, len(jobs)))
+if name:
+    likes = random.randint(500, 5000)
+    followers = random.randint(100, 3000)
 
     st.markdown(f"""
-    <div class="result-box">
-        <h2 style="color:#6a1b9a;">🎯 {selected_mbti} 추천 직업</h2>
+    <div class="card">
+    <h2>👤 {name}</h2>
+    <p>🧩 {mbti}</p>
+    <p>❤️ Likes {likes} | 👥 Followers {followers}</p>
+    <p><b>미래를 설계하는 특별한 인재 🚀</b></p>
     </div>
     """, unsafe_allow_html=True)
 
-    for job in recommended:
-        st.success(job)
-
     st.write("")
-    st.markdown("### 🌟 진로 조언")
-    
-    advice = {
-        "I": "혼자 깊게 생각하는 능력이 뛰어나요 🧠",
-        "E": "사람들과 소통하며 에너지를 얻어요 🤝",
-        "S": "현실적이고 실용적인 감각이 좋아요 📌",
-        "N": "창의적이고 미래지향적이에요 💡",
-        "T": "논리적인 판단이 강점이에요 📊",
-        "F": "공감 능력이 뛰어나요 ❤️",
-        "J": "계획적이고 체계적이에요 📅",
-        "P": "유연하고 적응력이 좋아요 🌊"
-    }
+    st.markdown("### 📷 Stories")
+    col1, col2, col3, col4 = st.columns(4)
+    col1.button("🤖 AI")
+    col2.button("🎨 Design")
+    col3.button("🚀 Future")
+    col4.button("💸 Salary")
 
-    for char in selected_mbti:
-        st.info(advice[char])
+    if st.button("🎰 직업 추천 받기"):
+        placeholder = st.empty()
+        jobs = career_data[mbti]
 
-# 하단
-st.write("")
-st.markdown("---")
-st.markdown("### 💖 오늘도 멋진 미래를 준비하는 여러분을 응원합니다! 🚀")
+        for _ in range(12):
+            rolling = random.choice(jobs)[0]
+            placeholder.info(f"🎰 {rolling}")
+            time.sleep(0.15)
+
+        job, salary, tier = random.choice(jobs)
+        match = random.randint(80, 99)
+
+        placeholder.markdown(f"""
+        <div class="feed-card">
+        <h2>📸 Career Feed</h2>
+        <h1>🚀 {job}</h1>
+        <h3>❤️ 궁합 {match}%</h3>
+        <h3>💸 평균 연봉 {salary}</h3>
+        <h3>🔥 티어 {tier}</h3>
+        <p><b>"당신과 매우 잘 맞는 직업입니다!"</b></p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.progress(match)
+
+        if st.button("❤️ 좋아요"):
+            st.success("좋아요 +1 ❤️")
+
+        st.markdown("### 💬 댓글")
+        for c in random.sample(comments, 3):
+            st.info(c)
+
+        st.markdown("### ✉️ Career DM")
+        st.success(random.choice(dm_messages))
+
+        st.markdown("### 🔥 Trending Careers")
+        st.write("""
+        #1 AI 개발자 🤖  
+        #2 콘텐츠 크리에이터 🎬  
+        #3 UX 디자이너 🎨  
+        #4 데이터 분석가 📊  
+        #5 게임 개발자 🎮  
+        """)
+
+        st.balloons()
