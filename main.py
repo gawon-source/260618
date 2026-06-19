@@ -67,7 +67,7 @@ menu_data = [
     ("🍛 카레", "호불호 없는 맛", "★★★★"),
     ("🍲 샤브샤브", "건강 + 맛", "★★★★★"),
     ("🍚 비빔밥", "한식 최고", "★★★★"),
-    ("🍜 떡볶이", "매콤달콤", "★★★★★"),
+    ("🌶️ 떡볶이", "매콤달콤", "★★★★★"),
 ]
 
 comments = [
@@ -100,36 +100,29 @@ if st.session_state.page == "home":
     st.markdown('<div class="title">🍽️ Foodstagram</div>', unsafe_allow_html=True)
     st.markdown('<div class="subtitle">오늘 뭐 먹지? 룰렛이 골라드려요 🎰✨</div>', unsafe_allow_html=True)
 
-    name = st.text_input("👤 닉네임 입력", placeholder="예: foodie123")
-
     food_type = st.selectbox(
         "🍴 먹고 싶은 종류",
         ["전체", "한식", "양식", "일식", "패스트푸드"]
     )
 
     if st.button("🎰 메뉴 추천 시작"):
-        if name:
-            st.session_state.name = name
-            st.session_state.food_type = food_type
-            st.session_state.page = "result"
-            st.session_state.likes = random.randint(100, 999)
-            st.rerun()
-        else:
-            st.warning("닉네임을 입력해주세요!")
+        st.session_state.food_type = food_type
+        st.session_state.page = "result"
+        st.session_state.likes = random.randint(100, 999)
+        st.rerun()
 
 # -------------------------------
 # RESULT
 # -------------------------------
 if st.session_state.page == "result":
 
-    name = st.session_state.name
     followers = random.randint(100, 5000)
 
     st.markdown('<div class="title">🍽️ Foodstagram</div>', unsafe_allow_html=True)
 
     st.markdown(f"""
     <div class="card">
-    <h2>👤 {name}</h2>
+    <h2>🍴 Food Explorer</h2>
     <p>❤️ Likes {st.session_state.likes} | 👥 Followers {followers}</p>
     <p><b>오늘의 메뉴 탐험가 🍴✨</b></p>
     </div>
@@ -178,7 +171,7 @@ if st.session_state.page == "result":
     st.write("""
     #1 🍗 치킨  
     #2 🍕 피자  
-    #3 🍜 떡볶이  
+    #3 🌶️ 떡볶이  
     #4 🍣 초밥  
     #5 🍔 햄버거  
     """)
