@@ -25,6 +25,7 @@ st.markdown("""
     font-size: 52px;
     font-weight: bold;
     color: white;
+    font-weight: bold;
 }
 
 .sub-title {
@@ -87,20 +88,43 @@ dm_messages = [
 ]
 
 # -------------------------------
-# 헤더
+# Session State
 # -------------------------------
-st.markdown('<p class="main-title">📸 CareerGram</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-title">SNS처럼 즐기는 MBTI 진로 탐색 ✨</p>', unsafe_allow_html=True)
+if "page" not in st.session_state:
+    st.session_state.page = "home"
 
 # -------------------------------
-# 입력
+# HOME
 # -------------------------------
-name = st.text_input("👤 이름 입력", placeholder="예: 김민준")
-mbti = st.selectbox("🧩 MBTI 선택", list(career_data.keys()))
+if st.session_state.page == "home":
 
-if name:
+    st.markdown('<p class="main-title">📸 CareerGram</p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-title">SNS처럼 즐기는 MBTI 진로 탐색 ✨</p>', unsafe_allow_html=True)
+
+    name = st.text_input("👤 이름 입력", placeholder="예: 김민준")
+    mbti = st.selectbox("🧩 MBTI 선택", list(career_data.keys()))
+
+    if st.button("🚀 진로 추천 시작"):
+        if name:
+            st.session_state.name = name
+            st.session_state.mbti = mbti
+            st.session_state.page = "result"
+            st.rerun()
+        else:
+            st.warning("이름을 입력해주세요!")
+
+# -------------------------------
+# RESULT
+# -------------------------------
+elif st.session_state.page == "result":
+
+    name = st.session_state.name
+    mbti = st.session_state.mbti
+
     likes = random.randint(500, 5000)
     followers = random.randint(100, 3000)
+
+    st.markdown('<p class="main-title">📸 CareerGram</p>', unsafe_allow_html=True)
 
     st.markdown(f"""
     <div class="card">
@@ -111,56 +135,51 @@ if name:
     </div>
     """, unsafe_allow_html=True)
 
-    st.write("")
-    st.markdown("### 📷 Stories")
-    col1, col2, col3, col4 = st.columns(4)
-    col1.button("🤖 AI")
-    col2.button("🎨 Design")
-    col3.button("🚀 Future")
-    col4.button("💸 Salary")
+    placeholder = st.empty()
+    jobs = career_data[mbti]
 
-    if st.button("🎰 직업 추천 받기"):
-        placeholder = st.empty()
-        jobs = career_data[mbti]
+    for _ in range(12):
+        rolling = random.choice(jobs)[0]
+        placeholder.info(f"🎰 {rolling}")
+        time.sleep(0.15)
 
-        for _ in range(12):
-            rolling = random.choice(jobs)[0]
-            placeholder.info(f"🎰 {rolling}")
-            time.sleep(0.15)
+    job, salary, tier = random.choice(jobs)
+    match = random.randint(80, 99)
 
-        job, salary, tier = random.choice(jobs)
-        match = random.randint(80, 99)
+    placeholder.markdown(f"""
+    <div class="feed-card">
+    <h2>📸 Career Feed</h2>
+    <h1>🚀 {job}</h1>
+    <h3>❤️ 궁합 {match}%</h3>
+    <h3>💸 평균 연봉 {salary}</h3>
+    <h3>🔥 티어 {tier}</h3>
+    <p><b>"당신과 매우 잘 맞는 직업입니다!"</b></p>
+    </div>
+    """, unsafe_allow_html=True)
 
-        placeholder.markdown(f"""
-        <div class="feed-card">
-        <h2>📸 Career Feed</h2>
-        <h1>🚀 {job}</h1>
-        <h3>❤️ 궁합 {match}%</h3>
-        <h3>💸 평균 연봉 {salary}</h3>
-        <h3>🔥 티어 {tier}</h3>
-        <p><b>"당신과 매우 잘 맞는 직업입니다!"</b></p>
-        </div>
-        """, unsafe_allow_html=True)
+    st.progress(match)
 
-        st.progress(match)
+    if st.button("❤️ 좋아요"):
+        st.success("좋아요 +1 ❤️")
 
-        if st.button("❤️ 좋아요"):
-            st.success("좋아요 +1 ❤️")
+    st.markdown("### 💬 댓글")
+    for c in random.sample(comments, 3):
+        st.info(c)
 
-        st.markdown("### 💬 댓글")
-        for c in random.sample(comments, 3):
-            st.info(c)
+    st.markdown("### ✉️ Career DM")
+    st.success(random.choice(dm_messages))
 
-        st.markdown("### ✉️ Career DM")
-        st.success(random.choice(dm_messages))
+    st.markdown("### 🔥 Trending Careers")
+    st.write("""
+    #1 AI 개발자 🤖  
+    #2 콘텐츠 크리에이터 🎬  
+    #3 UX 디자이너 🎨  
+    #4 데이터 분석가 📊  
+    #5 게임 개발자 🎮  
+    """)
 
-        st.markdown("### 🔥 Trending Careers")
-        st.write("""
-        #1 AI 개발자 🤖  
-        #2 콘텐츠 크리에이터 🎬  
-        #3 UX 디자이너 🎨  
-        #4 데이터 분석가 📊  
-        #5 게임 개발자 🎮  
-        """)
+    st.balloons()
 
-        st.balloons()
+    if st.button("🏠 처음으로 돌아가기"):
+        st.session_state.page = "home"
+        st.rerun()
