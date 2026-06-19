@@ -5,7 +5,7 @@ import time
 # -------------------------------
 # PAGE CONFIG
 # -------------------------------
-st.set_page_config(page_title="CareerGram 📸", page_icon="📸", layout="wide")
+st.set_page_config(page_title="Foodstagram 🍽️", page_icon="🍽️", layout="wide")
 
 # -------------------------------
 # CSS
@@ -55,39 +55,36 @@ html, body, [class*="css"] {
 # -------------------------------
 # DATA
 # -------------------------------
-career_data = {
-    "INTJ": [("AI 개발자", "9000만원", "SSS"), ("데이터 과학자", "8800만원", "SS"), ("전략 컨설턴트", "8500만원", "S")],
-    "INTP": [("연구원", "7000만원", "S"), ("개발자", "8500만원", "SS"), ("발명가", "9000만원", "SSS")],
-    "ENTJ": [("CEO", "1.2억원", "SSS"), ("변호사", "9000만원", "S"), ("기획자", "7500만원", "S")],
-    "ENTP": [("창업가", "1억원", "SSS"), ("PD", "7000만원", "S"), ("마케터", "6500만원", "S")],
-    "INFJ": [("상담사", "5000만원", "A"), ("교사", "5500만원", "A"), ("작가", "6000만원", "S")],
-    "INFP": [("디자이너", "6500만원", "S"), ("작가", "6000만원", "S"), ("크리에이터", "8000만원", "SS")],
-    "ENFP": [("크리에이터", "9000만원", "SS"), ("배우", "1억원", "SSS"), ("광고기획자", "7000만원", "S")],
-    "ISTJ": [("공무원", "6000만원", "A"), ("회계사", "8000만원", "SS"), ("엔지니어", "7500만원", "S")],
-    "ESFP": [("연예인", "1억원", "SSS"), ("가수", "9000만원", "SS"), ("MC", "7000만원", "S")]
-}
+menu_data = [
+    ("🍕 피자", "치즈 폭발!", "★★★★★"),
+    ("🍔 햄버거", "든든한 한끼!", "★★★★"),
+    ("🍣 초밥", "신선함 MAX", "★★★★★"),
+    ("🍜 라멘", "국물 맛집", "★★★★"),
+    ("🍗 치킨", "오늘은 치킨각", "★★★★★"),
+    ("🥩 스테이크", "고기 is love", "★★★★★"),
+    ("🍝 파스타", "분위기까지 완벽", "★★★★"),
+    ("🌮 타코", "색다른 맛", "★★★★"),
+    ("🍛 카레", "호불호 없는 맛", "★★★★"),
+    ("🍲 샤브샤브", "건강 + 맛", "★★★★★"),
+    ("🍚 비빔밥", "한식 최고", "★★★★"),
+    ("🍜 떡볶이", "매콤달콤", "★★★★★"),
+]
 
 comments = [
-    "이 직업 진짜 잘 어울려요 🔥",
-    "미래 유망 직업이에요 🚀",
-    "성격과 궁합 최고 💯",
-    "숨겨진 재능 발견 👀"
+    "이 메뉴 오늘 딱인데요 😋",
+    "와... 지금 너무 먹고 싶어요 🤤",
+    "맛집 가야겠어요 🔥",
+    "오늘 저녁은 이걸로 결정 💯"
 ]
 
 dm_messages = [
-    "당신은 잠재력이 큰 사람입니다 🚀",
-    "성장 가능성이 매우 높아요 🌟",
-    "미래가 기대되는 인재예요 💫"
+    "오늘은 맛있는 하루가 될 것 같아요 🍀",
+    "먹는 순간 행복해질 메뉴예요 💕",
+    "후회 없는 선택입니다 😎"
 ]
 
-# 없는 MBTI 보완
-all_mbti = ["INTJ","INTP","ENTJ","ENTP","INFJ","INFP","ENFJ","ENFP","ISTJ","ISFJ","ESTJ","ESFJ","ISTP","ISFP","ESTP","ESFP"]
-for m in all_mbti:
-    if m not in career_data:
-        career_data[m] = [("AI 개발자", "9000만원", "SS"), ("기획자", "7000만원", "S"), ("디자이너", "6500만원", "S")]
-
 # -------------------------------
-# SESSION STATE
+# SESSION
 # -------------------------------
 if "page" not in st.session_state:
     st.session_state.page = "home"
@@ -96,65 +93,65 @@ if "likes" not in st.session_state:
     st.session_state.likes = random.randint(100, 999)
 
 # -------------------------------
-# HOME PAGE
+# HOME
 # -------------------------------
 if st.session_state.page == "home":
 
-    st.markdown('<div class="title">📸 CareerGram</div>', unsafe_allow_html=True)
-    st.markdown('<div class="subtitle">SNS처럼 즐기는 MBTI 진로 탐색 ✨</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title">🍽️ Foodstagram</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subtitle">오늘 뭐 먹지? 룰렛이 골라드려요 🎰✨</div>', unsafe_allow_html=True)
 
-    name = st.text_input("👤 이름 입력", placeholder="예: 김민준")
-    mbti = st.selectbox("🧩 MBTI 선택", all_mbti)
+    name = st.text_input("👤 닉네임 입력", placeholder="예: foodie123")
 
-    if st.button("🚀 진로 추천 시작"):
+    food_type = st.selectbox(
+        "🍴 먹고 싶은 종류",
+        ["전체", "한식", "양식", "일식", "패스트푸드"]
+    )
+
+    if st.button("🎰 메뉴 추천 시작"):
         if name:
             st.session_state.name = name
-            st.session_state.mbti = mbti
+            st.session_state.food_type = food_type
             st.session_state.page = "result"
             st.session_state.likes = random.randint(100, 999)
             st.rerun()
         else:
-            st.warning("이름을 입력해주세요!")
+            st.warning("닉네임을 입력해주세요!")
 
 # -------------------------------
-# RESULT PAGE
+# RESULT
 # -------------------------------
 if st.session_state.page == "result":
 
     name = st.session_state.name
-    mbti = st.session_state.mbti
-
     followers = random.randint(100, 5000)
 
-    st.markdown('<div class="title">📸 CareerGram</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title">🍽️ Foodstagram</div>', unsafe_allow_html=True)
 
     st.markdown(f"""
     <div class="card">
     <h2>👤 {name}</h2>
-    <p>🧩 {mbti}</p>
     <p>❤️ Likes {st.session_state.likes} | 👥 Followers {followers}</p>
-    <p><b>미래를 설계하는 특별한 인재 🚀</b></p>
+    <p><b>오늘의 메뉴 탐험가 🍴✨</b></p>
     </div>
     """, unsafe_allow_html=True)
 
     placeholder = st.empty()
-    jobs = career_data[mbti]
 
-    for _ in range(10):
-        rolling = random.choice(jobs)[0]
+    for _ in range(12):
+        rolling = random.choice(menu_data)[0]
         placeholder.info(f"🎰 {rolling}")
         time.sleep(0.15)
 
-    job, salary, tier = random.choice(jobs)
-    match = random.randint(80, 99)
+    menu, desc, rating = random.choice(menu_data)
+    match = random.randint(85, 99)
 
     placeholder.markdown(f"""
     <div class="feed">
-    <h2>📸 Career Feed</h2>
-    <h1>🚀 {job}</h1>
-    <h3>❤️ 궁합 {match}%</h3>
-    <h3>💸 평균 연봉 {salary}</h3>
-    <h3>🔥 티어 {tier}</h3>
+    <h2>📸 Food Feed</h2>
+    <h1>{menu}</h1>
+    <h3>💖 만족도 {match}%</h3>
+    <h3>⭐ 평점 {rating}</h3>
+    <p><b>{desc}</b></p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -174,16 +171,16 @@ if st.session_state.page == "result":
     for c in random.sample(comments, 3):
         st.info(c)
 
-    st.markdown("### ✉️ Career DM")
+    st.markdown("### ✉️ Food DM")
     st.success(random.choice(dm_messages))
 
-    st.markdown("### 🔥 Trending Careers")
+    st.markdown("### 🔥 Trending Menus")
     st.write("""
-    #1 AI 개발자 🤖  
-    #2 콘텐츠 크리에이터 🎬  
-    #3 UX 디자이너 🎨  
-    #4 데이터 분석가 📊  
-    #5 게임 개발자 🎮  
+    #1 🍗 치킨  
+    #2 🍕 피자  
+    #3 🍜 떡볶이  
+    #4 🍣 초밥  
+    #5 🍔 햄버거  
     """)
 
     st.balloons()
